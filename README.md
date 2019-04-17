@@ -8,3 +8,4 @@ Spivey, Michael Z. "Cycles in war." Integers 10.6 (2010): 747-764. Summary: Spiv
 
 Lakshtanov, E., & Roshchina, V. (2012). On finiteness in the card game of war. The American Mathematical Monthly, 119(4), 318-323. If there are positive probabilities of both the winning and the losing card being placed first at the bottom of the winner's deck, the game is finite.
 
+Aleksenko, A., & Lakshtanov, E. (2011). Finiteness of the playing time in'Beggar-my-neighbour'card game. arXiv preprint arXiv:1109.1460. "It is proved that in card games similar to 'Beggar-my-neighbour' the mathematical expectation of the playing time is finite, provided that the player who starts the round is determined randomly and the deck is shuffled when the trick is added. The result holds for the generic setting of the game."
