@@ -28,7 +28,6 @@ def calculate_game(p0, p1, tie_counter):
     configurations = []
     init = [p0.copy(), p1.copy()]
     configurations.append(init)
-    print(configurations)
 
     while len(p0) != 0 and len(p1) != 0:
 
