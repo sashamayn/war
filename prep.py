@@ -1,13 +1,11 @@
 #! /usr/bin/env python3
+"""
+Find all unique starting combinations of a specified set of cards.
+"""
+
 import os
 import multiprocessing as mp
 from perm_unique import perm_unique
-
-LOWEST_NUMBER = 1               # Inclusive
-HIGHEST_NUMBER = 5              # Inclusive
-N_DUPLICATES = 3
-CHUNKSIZE = 100000              # Report after every chunk
-POOL_SIZE = os.cpu_count() - 1  # Number of (additional) processes to use
 
 
 # For-loops have a (very) small overhead,
@@ -24,30 +22,62 @@ def write_to(fd, mid):
     return inner
 
 
-def run_and_report(iterable, msg=''):
+def run_and_report(iterable, chunksize, msg=''):
     count = 0
     for _ in iterable:
         count += 1
-        if not count % CHUNKSIZE:
+        if not count % chunksize:
             print(msg, count, sep='')
     print(msg, "Total: ", count, sep='')
 
 
-def async_func(start, rest, filename, mid):
+def async_func(start, rest, filename, mid, chunksize):
     # pid = mp.current_process().pid
     uid = ''.join(start)
     perms = map(lambda x: start + x, perm_unique(rest))
     with open(filename.format(uid), 'w') as fd:
         write_all = map(write_to(fd, mid), perms)
-        run_and_report(write_all, f'{uid} ')
+        run_and_report(write_all, chunksize, f'{uid} ')
 
 
-if __name__ == '__main__':
+def main(args=[]):
+    from argparse import ArgumentParser
+    parser = ArgumentParser(description=__doc__)
+
+    parser.add_argument(
+        'highest_card',
+        type=int,
+        help="The value of the highest card in the deck.")
+    parser.add_argument(
+        'n_duplicates',
+        type=int,
+        help="The number of suits,"
+        " i.e. the number of times every unique value appears.")
+    parser.add_argument(
+        '--lowest_card',
+        default=1,
+        type=int,
+        help="The value of the lowest card in the deck.")
+    parser.add_argument(
+        '--chunksize',
+        default=100000,
+        type=int,
+        help="Print how many configurations have been generated every"
+        " `chunksize` configurations.")
+    parser.add_argument(
+        '--pool_size',
+        default=os.cpu_count() - 1,
+        type=int,
+        help="Number of (additional) processes to use."
+    )
+
+    args = parser.parse_args(args)
+
     flat_list = [
         str(item)  # If we already convert here, we don't have to convert for
                    # every permutation
-        for item in range(LOWEST_NUMBER, HIGHEST_NUMBER + 1)
-        for _ in range(N_DUPLICATES)
+        for item in range(args.lowest_card, args.highest_card + 1)
+        for _ in range(args.n_duplicates)
     ]
 
     mid = len(flat_list) // 2
@@ -61,11 +91,17 @@ if __name__ == '__main__':
     assert len(set(starts)) == len(starts)
     assert len(set(rests)) == len(rests)
 
-    pool = mp.Pool(POOL_SIZE)
-    for start, rest in zip(starts, rests):
-        pool.apply_async(async_func, (start, rest, 'file-{}.txt', mid))
-    pool.close()
-    pool.join()
+    pool = mp.Pool(args.pool_size)
+    try:
+        for start, rest in zip(starts, rests):
+            pool.apply_async(
+                async_func,
+                (start, rest, 'file-{}.txt', mid, args.chunksize))
+        pool.close()
+        pool.join()
+    finally:
+        pool.terminate()
+
     # async_func((), flat_list, 'file-{}.txt', mid)
 
     # print("before perms")
@@ -76,5 +112,6 @@ if __name__ == '__main__':
     #     run_and_report(map(write_to(wr, mid), perms))
     print("Done!")
 
-# Four minutes
-# 57 220 000
+
+if __name__ == '__main__':
+    main()
