@@ -2,6 +2,8 @@ The objective of this little project (projectlet?) is to figure out under what c
 
 We define the order in which we put the cards back into the deck to be WINNING CARD ON TOP OF LOSING CARD. In case of tie, the order in which cards are added to the back of the deck are: W_N L_N W_N-1 L_N-1 ...W1 L1 (top to bottom). 
 
+So far we know that no cycles exist in a 12 (3x4 suits) or a 16 (4x4) decks. Is there a reason to assume that as the space grows larger a solution is likely to emerge? In a slightly different variation, where the order of returning cards to the deck is CARD OF PLAYER A ON TOP OF CARD OF PLAYER B, a cycle emerges with four cards (deal 1,2 to A and 2,1 to B). 
+
 Related work: 
 
 Spivey, Michael Z. "Cycles in war." Integers 10.6 (2010): 747-764. Summary: Spivey shows that cycles are possible in a deck where cards have a strict ranking 1 to n. 
